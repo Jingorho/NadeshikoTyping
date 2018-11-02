@@ -1,3 +1,4 @@
+
 //画像読み込み-----------------------------------------------------------
 var ASSETS = {
     
@@ -74,6 +75,33 @@ var Qcount;
 
 
 // //問題文--------------------------------------------------------------
+//2018.11.01追記
+//もともと.txtから読み込ませていたが、テキストファイルが
+//どっかいってしまったのでデモ用に配列で直書き...
+var QT_Begginer = [
+    ["hasami", "はさみ"], ["umi", "うみ"], ["gakkou", "がっこう"], ["mikan", "みかん"],
+    ["baketu", "バケツ"], ["sakura", "さくら"], ["omoti", "おもち"], ["musi", "むし"],
+    ["megane", "メガネ"], ["kame", "かめ"], ["sumaho", "スマホ"], ["tomato", "トマト"],
+    ["hatena", "hatena"], ["jisyo", "じしょ"], ["tamago", "たまご"], ["obake", "おばけ"],
+];
+var QT_Middle = [
+    ["medamayaki", "目玉焼き"], ["pasokon", "パソコン"], ["natuyasumi", "夏休み"], ["eirian", "エイリアン"],
+    ["imonikai", "芋煮会"], ["hokkaidou", "北海道"], ["oyakodon", "親子丼"], ["takkyuu", "卓球"],
+    ["waseda", "早稲田"], ["デラックス", "derakkusu"], ["zundamoti", "ずんだもち"], ["redexi", "レディ"],
+    ["vanpaia", "ヴァンパイア"], ["janpu", "ジャンプ"], ["oyukagen", "お湯加減"], ["feinto", "フェイント"],
+];
+var QT_Advanced = [
+    ["pbakeyasiki", "お化け屋敷"], ["hokkaidou", "北海道"], ["puroguramingu", "プログラミング"], ["juuissai", "十一歳"],
+    ["seisintotokinoheya", "精神と時の部屋"], ["tonarinototoro", "となりのトトロ"], ["omoti", "おもち"], ["musi", "むし"],
+    ["kuxidexitti", "クィディッチ"], ["akaikitunetomidorinotanuki", "赤いきつねと緑のたぬき"], ["appurupai", "アップルパイ"], ["syakaikengaku", "社会見学"],
+    ["akihabaraeki", "秋葉原駅"], ["doitumokoitumo", "どいつもこいつも"], ["issyuunenkinenbi", "一周年記念日"], ["jukunosensei", "塾の先生"],
+];
+var QT_Final = [
+    ["tonarinokyakuhayokukakikuukyakuda", "隣の客はよく柿食う客だ"], ["toukyoutokkyokyokakyoku", "東京特許許可局"], ["kaerupyokopyokomipyokopyoko", "かえるぴょこぴょこみぴょこぴょこ"], ["akamakigamiaomakigamikimakigami", "赤巻き紙青巻き紙黄巻き紙"],
+    ["sumomomomomomomomonouti", "すもももももももものうち"], ["kouhagokigennukagainimairimasitagaminasannogennkidesita", "今日はご機嫌伺いに参りましたがみなさんお元気でした"], ["basugasubakuhatu", "バスガス爆発"], ["namamuginamagomenamatamago", "生麦生米生卵"],
+    ["bijutusitugijutusitusyujutusitu", "美術室技術室手術室"], ["miiratorigamiiraninaru", "ミイラ取りがミイラになる"], ["nouarutakahatumewokakusu", "能ある鷹は爪を隠す"], ["nitowooumonohaittowomoezu", "二兎を追うものは一兎をも得ず"],
+    ["bousugabyoubunijouzunibouzunoewokaita", "坊主が屏風に上手に坊主の絵を描いた"], ["kikuhaittokinohajikikanuhaissyounohaji", "聞くは一時の恥聞かぬは一生の恥"], ["owariyokerebasubeteyosi", "終わりよければ全て良し"], ["waraukadonihahukukitaru", "笑う角には笑う角には福来たる"],
+];
 
 //セットアップ-----------------------------------------------------------
 // tm.game.setup({
@@ -641,16 +669,24 @@ tm.define("GameScene",{
         //QLvPt: 6~12 Middle
         //QLvPt: 13~19 Advanced
         //QLvPt: 20~ Final
-        if(QLvPt <= 5){ q = QT_Begginer.pickup(); }
-        if(6 <= QLvPt && QLvPt <= 12){ q = QT_Middle.pickup(); }
-        if(13 <= QLvPt && QLvPt <= 19){ q = QT_Advanced.pickup(); }
-        if(20 <= QLvPt){ q = QT_Final.pickup(); }
+        
+        // if(QLvPt <= 5){ q = QT_Begginer.pickup(); }
+        // if(6 <= QLvPt && QLvPt <= 12){ q = QT_Middle.pickup(); }
+        // if(13 <= QLvPt && QLvPt <= 19){ q = QT_Advanced.pickup(); }
+        // if(20 <= QLvPt){ q = QT_Final.pickup(); }
+        //2018.11.01追記
+        if(QLvPt <= 5){ q = this.pickup(QT_Begginer); }
+        if(6 <= QLvPt && QLvPt <= 12){ q = this.pickup(QT_Middle); }
+        if(13 <= QLvPt && QLvPt <= 19){ q = this.pickup(QT_Advanced); }
+        if(20 <= QLvPt){ q = this.pickup(QT_Final); }
        
-        this.currentLabel.text = q.word;
+        // this.currentLabel.text = q.word;
+        this.currentLabel.text = q[0];
         this.currentLabel.alpha = 0;
         this.currentLabel.tweener.clear().fadeIn(150);
         
-        this.descriptionLabel.text = q.description;
+        // this.descriptionLabel.text = q.description;
+        this.descriptionLabel.text = q[1];
         this.descriptionLabel.alpha = 0;
         this.descriptionLabel.tweener.clear().fadeIn(150);
         
@@ -668,6 +704,18 @@ tm.define("GameScene",{
     showPause: function() {
         var scene = PauseScene();
         this.app.pushScene(scene);
+    },
+    
+    //2018.11.01追記
+    //問題文の配列からランダムに問題選択する関数
+    pickup: function(quesArray){
+        var questionRow = tm.util.Random.randint(0, quesArray.length-1);
+        
+        var questionWord = quesArray[questionRow][0];
+        var questionDescription = quesArray[questionRow][1];
+        var pickedupQuestion = [questionWord, questionDescription];
+        
+        return pickedupQuestion;
     },
     
     
